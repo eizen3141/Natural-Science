@@ -38,10 +38,7 @@
     </div>
     <div class="card-action">
       <div>
-        <button
-            class="btn waves-effect waves-light auth-submit"
-            type="submit"
-        >
+        <button class="btn waves-effect waves-light auth-submit" type="submit">
           Зарегистрироваться
           <i class="material-icons right">send</i>
         </button>
@@ -57,7 +54,6 @@
 
 <script>
 import {email, required, minLength} from 'vuelidate/lib/validators'
-//import mongoose from 'mongoose'
 export default {
   name: 'register',
   data: () => ({
@@ -78,17 +74,27 @@ export default {
         this.$v.$touch()
         return
       }
-
-      const formData = {
-        email: this.email,
-        password: this.password,
-        name: this.name
-      }
-
-      //db.users.insertOne({"name": "Tom", "age": 28, languages: ["english", "spanish"]})
-      console.log(formData)
-
-      this.$router.push('/')
+      const mongoose = require("mongoose");
+      const Schema = mongoose.Schema;
+ 
+      // установка схемы
+      const userScheme = new Schema({
+        email: String,
+        password: String,
+        name: String
+      });
+ 
+      // подключение
+      mongoose.connect('mongouri', { useUnifiedTopology: true, useNewUrlParser: true })
+ 
+      const User = mongoose.model("User", userScheme)
+      const user = new User({email: this.email, password: this.password, name: this.name})
+      user.save(function(err){
+        mongoose.disconnect();  // отключение от базы данных
+        if(err) return console.log(err);
+        console.log("Сохранен объект", user);
+      });
+      this.$router.push('/') 
     }
   }
 }

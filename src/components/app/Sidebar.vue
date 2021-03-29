@@ -11,7 +11,7 @@ export default {
     props: ['value'],
     data: () => ({
         links: [
-            {title: 'Tema', url: '/title', exact: true},
+            {title: 'Teмa', url: '/title', exact: true},
             {title: 'Тест', url: '/undefined'},
             {title: 'Оценка', url: '/undefined'},
             {title: 'Рейтинг', url: '/undefined'}

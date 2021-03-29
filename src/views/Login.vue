@@ -58,13 +58,26 @@ export default {
         this.$v.$touch()
         return
       }
-      const formData = {
-        email: this.email,
-        password: this.password
-      }
-
-      console.log(formData)
-      this.$router.push('/Title')
+      const mongoose = require("mongoose");
+      const Schema = mongoose.Schema;
+ 
+      // установка схемы
+      const userScheme = new Schema({
+        email: String,
+        password: String,
+      });
+ 
+      // подключение
+      mongoose.connect('mongouri', { useUnifiedTopology: true, useNewUrlParser: true })
+ 
+      const User = mongoose.model("User", userScheme)
+      const user = new User({email: this.email, password: this.password})
+      user.findOne(function(err){
+        mongoose.disconnect();  // отключение от базы данных
+        if(err) return console.log(err);
+        console.log("Сохранен объект", user);
+      });
+      this.$router.push('/') 
     }
   }
 }
