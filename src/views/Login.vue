@@ -42,6 +42,10 @@
 
 <script>
 import {email, required, minLength} from 'vuelidate/lib/validators'
+
+let MongoClient = require('mongodb').MongoClient
+let url = 'mongodb+srv://admin:1234@cluster.ogl8u.mongodb.net/natural-science?retryWrites=true&w=majority'
+
 export default {
   name: 'login',
   data: () => ({
@@ -58,25 +62,14 @@ export default {
         this.$v.$touch()
         return
       }
-      const mongoose = require("mongoose");
-      const Schema = mongoose.Schema;
- 
-      // установка схемы
-      const userScheme = new Schema({
-        email: String,
-        password: String,
-      });
- 
-      // подключение
-      mongoose.connect('mongouri', { useUnifiedTopology: true, useNewUrlParser: true })
- 
-      const User = mongoose.model("User", userScheme)
-      const user = new User({email: this.email, password: this.password})
-      user.findOne(function(err){
-        mongoose.disconnect();  // отключение от базы данных
-        if(err) return console.log(err);
-        console.log("Сохранен объект", user);
-      });
+      MongoClient.connect(url, {useUnifiedTopology: true}, function(err, db) {
+        if (err) throw err
+        let dbo = db.db('natural-science')
+        dbo.collection('users').findOne(this.email, function(err) {
+          if (err) throw err
+          db.close()
+        })
+      })
       this.$router.push('/') 
     }
   }
