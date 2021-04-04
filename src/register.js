@@ -1,19 +1,13 @@
-import {MongoClient} from 'mongodb'
-const client = new MongoClient('mongodb+srv://admin:1234@cluster.ogl8u.mongodb.net/myFirstDatabase?retryWrites=true&w=majority')
-const users = client.db().collections('users')
+let MongoClient = require('mongodb').MongoClient
+let url = 'mongodb+srv://admin:1234@cluster.ogl8u.mongodb.net/natural-science?retryWrites=true&w=majority'
 
-let email = 'useremail'
-let password = 'userpassword'
-let name ='username'
-
-const register = async (email, password, name) => {
-  try {
-    await client.connect()
-    await client.db('users')
-    users.insertOne(email, password, name)
-  } catch (error) {
-    console.log(error)    
-  }
+export default function register(email, password, name) {
+  MongoClient.connect(url, {useUnifiedTopology: true}, function(err, db) {
+    if (err) throw err
+    var dbo = db.db('natural-science')
+    var account = dbo.collection('users').findOne(email)
+    if(account.email === email) return false
+    dbo.collection('users').insertOne({email: email, password: password, name: name})
+    return true
+  })
 }
-
-register();

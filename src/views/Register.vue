@@ -54,6 +54,7 @@
 
 <script>
 import {email, required, minLength} from 'vuelidate/lib/validators'
+import register from '../register'
 export default {
   name: 'register',
   data: () => ({
@@ -74,7 +75,8 @@ export default {
         this.$v.$touch()
         return
       }
-      this.$router.push('/') 
+      if(register(this.email, this.password, this.name)) this.$router.push('/') 
+      else return
     }
   }
 }
